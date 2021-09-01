@@ -11,7 +11,9 @@ HOST_LIST = ('wp.pl', 'gazeta.pl', 'ap-selfservice.com', 'yahoo.com', 'ebay.com'
 THRESHOLD = 1
 
 def resolve(host_list: []):
-    return list({round(dns.resolver.resolve(host, 'A').response.time, 5) for host in host_list})
+    resolver = dns.resolver.Resolver() 
+    resolver.nameservers = ['1.1.1.1', '8.8.8.8']
+    return list({round(resolver.resolve(host, 'A').response.time, 5) for host in host_list})
 
 def average(list) -> float:
     return sum(list) / len(list)
@@ -33,7 +35,9 @@ if __name__ == '__main__':
 
     verbose = True if os.environ.get('DVERBOSE') == 'True' else False
 
-    responses = list(map(lambda x: resolve(HOST_LIST), range(5)))
+    # Run resolve 5 times to get an average
+    responses = list(map(lambda x: resolve(HOST_LIST), range(3)))
+    # Flatten the arrays
     responses = list(flatten(responses))
     avg_time = average(responses)
     if verbose:
@@ -41,7 +45,3 @@ if __name__ == '__main__':
         pp.pprint(responses)
         print(f"Average time {round(avg_time,3)}sec")
 
-
-
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
