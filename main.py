@@ -6,6 +6,7 @@ import json
 import os
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
+import time
 
 HOST_LIST = ('wp.pl', 'gazeta.pl', 'ap-selfservice.com', 'yahoo.com', 'ebay.com', 'ebay.de', 'YouTube.com', 'Facebook.com', 'wikipedia.org')
 THRESHOLD = 1
@@ -35,6 +36,7 @@ if __name__ == '__main__':
 
     verbose = True if os.environ.get('DVERBOSE') == 'True' else False
 
+    t = time.process_time()
     # Run resolve 5 times to get an average
     responses = list(map(lambda x: resolve(HOST_LIST), range(3)))
     # Flatten the arrays
@@ -43,5 +45,6 @@ if __name__ == '__main__':
     if verbose:
         pp = pprint.PrettyPrinter(width=41, compact=True)
         pp.pprint(responses)
-        print(f"Average time {round(avg_time,3)}sec")
+        print(f"Average response time {round(avg_time,3)}sec")
+        print(f"Complete processing time {time.process_time() - t}")
 
